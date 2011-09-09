@@ -11,6 +11,7 @@ import wx.lib.agw.aui as aui
 
 import panel
 
+import controller.events as events
 #import pickle
 
 class WindowApp(wx.App):
@@ -28,7 +29,7 @@ class WindowApp(wx.App):
             raise e;
         
 ###############################################################################
-import controller.events as events
+
 class MainFrame(wx.Frame):
     """
     Frame principal da aplicacao, controla o AUI Manager
@@ -37,7 +38,6 @@ class MainFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, None, wx.ID_ANY, title="Kantan", size=(1024,768))
 
-        self.actions = events.Actions()
         self.aui_mgr = aui.AuiManager(self)
         
         self.list_panel = panel.ListPackages(self)
@@ -48,7 +48,8 @@ class MainFrame(wx.Frame):
         
 #        self.SetClientSize(self.GetSize())
 
-        self.__create_menu()
+        self.SetMenuBar(MainMenuBar(self).menu_bar)
+#        self.__create_menu()
 
     def __init_panel_manager(self):
         info = aui.AuiPaneInfo().CloseButton(visible=False).MaximizeButton().MinimizeButton()
@@ -65,45 +66,30 @@ class MainFrame(wx.Frame):
         
         self.aui_mgr.Update()        
 
-    def __create_menu(self):
-        """
-        Create the menu
-        """
-        def doBind(item, handler):
-            """ Create menu events. """
-            self.Bind(wx.EVT_MENU, handler, item)
-
-        menubar = wx.MenuBar()
-
-        fileMenu = wx.Menu()
-
-#        doBind( fileMenu.Append(wx.ID_ANY, "&Exit\tAlt+F4",
-#                                "Exit Program"),self.__on_exit)
-        
-        self.Bind(wx.EVT_MENU, self.actions.file_to_pkglist, 
-                  fileMenu.Append(wx.ID_ANY, "Open Package List...", 
-                                  "Open Package List"))
-        self.Bind(wx.EVT_MENU, self.__on_exit, 
-                  fileMenu.Append(wx.ID_ANY, "&Exit\tAlt+F4", "Exit Program"))
-
-        optionsMenu = wx.Menu()
-
-#        doBind( optionsMenu.Append(wx.ID_ANY,
-#                                   "Disable Current Tab"),
-#                self.onDisableTab)
-
-        # add the menus to the menubar
-        menubar.Append(fileMenu, "File")
-        menubar.Append(optionsMenu, "About")
-
-        self.SetMenuBar(menubar)
-        
-    def __on_exit(self, event):
-        """
-        Evento de fechamento
-        """
-        self.Close()
-
 ###############################################################################
+
+class MainMenuBar(object):
+    def __init__(self, frame):
+        self.menu_bar = wx.MenuBar()
+        self.menu_bar.Append(FileMenu(frame).menu, "File")
+#        self.Append(HelpMenu(), "Help")
+        
+###############################################################################
+
+class FileMenu(object):
+    def __init__(self, frame):
+        self.menu = wx.Menu()
+        self.actions = events.Actions()
+        frame.Bind(wx.EVT_MENU, self.actions.file_to_pkglist, 
+                  self.menu.Append(wx.ID_ANY, "Open Package List...", 
+                                  "Open Package List"))
+        frame.Bind(wx.EVT_MENU, self.actions.exit, 
+                  self.menu.Append(wx.ID_ANY, "&Exit\tAlt+F4", "Exit Program"))
     
+###############################################################################
+
+class HelpMenu(wx.Menu):
+    def __init__(self):
+        self.actions = events.Actions()
+        
     

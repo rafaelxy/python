@@ -48,3 +48,7 @@ class Actions(object):
             self.ctrl_pkg.load_package_list(package)
 
         dialog.Destroy()
+        
+    def exit(self, event):
+        event.EventObject.Close()
+        

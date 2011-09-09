@@ -10,17 +10,24 @@ import lxml.etree as etree
 import borland.vcl as vcl
 import os
 import compiler.graph as graph
+import fnmatch
 
+#TODO deixar essa classe generica, independente do compilador (utilizando adaptadores/strategies)
 class PackageList(object):
+    """Classe de geracao de lista de pacotes"""
     def __init__(self):
         self.graph_pkg = dict()
         self.dict_name = dict()
         self.__pkg_exts = ["bpk", "bpr"]
         self.__include_path = (["c:\\gemini\\packages\\", 
-                                "c:\\gemini\\executaveis\\"])
+                                "c:\\gemini\\executaveis\\Administracao\\",
+                                "c:\\gemini\\executaveis\\Aplicativos\\",
+                                "c:\\gemini\\executaveis\\Desenv\\",
+                                "c:\\gemini\\executaveis\\Servidores\\"])
         
     def generate_package_list(self, seed_package):
         try:
+            self.graph_pkg = dict()
             seed_package = os.path.splitext(seed_package)[0]
             self.__generate_graph(seed_package)
             
@@ -35,7 +42,7 @@ class PackageList(object):
         
         
     def __generate_graph(self, seed_package):
-        """chamada recursive para pegar todos os pacotes da dependencia"""
+        """chamada recursiva para pegar todos os pacotes da dependencia"""
         remove_ext = lambda package: (os.path.splitext(package)[0])
         
         packages = self.__get_dependency_list(seed_package)
@@ -61,12 +68,13 @@ class PackageList(object):
         
     def __get_dependency_list(self, filename):
         """Pega a lista de dependecia do pacote passado por parametro"""
-        filename = self.__find_pkg_file(filename)
+        xml = self.__find_pkg_file(filename)
         
-        macros = filename.find("MACROS")
+        macros = xml.find("MACROS")
         xml_packages = macros.find("PACKAGES")
         values = xml_packages.get("value")
         
+        #pega a lista de pacotes retirando os pacotes ignorados
         packages = values.split()
         set_pkgs = set(packages)
         set_ignore = set(vcl.ignore_packages)
@@ -78,19 +86,21 @@ class PackageList(object):
     
     def __find_pkg_file(self, filename):
         """Acha o arquivo do nome do pacote indicado"""
-        #TODO search em todos os include paths
-        filename = self.__include_path[0] + filename + "\\" + filename
+        matches = []
+        for path in self.__include_path:
+            search_path = path + filename + "\\"
+            for root, dirnames, filenames in os.walk(search_path):
+                for ext in self.__pkg_exts:
+                    for filename in fnmatch.filter(filenames, 
+                                                   filename + "." + ext):
+                        matches.append(os.path.join(root, filename))
+                        break
+                    
+        if not matches:
+            raise Exception("Compiler file not found in " + self.__include_path)
         
-        found = False
-        for ext in self.__pkg_exts:
-            filename = filename + "." + ext
-            if os.path.isfile(filename):
-                filename = etree.parse(filename)
-                found = True
-                break
-        
-        if found is False:
-            raise Exception("Compiler file not found in " + filename)
+        filename = matches[0]
+        filename = etree.parse(filename)
         
         return filename
 
