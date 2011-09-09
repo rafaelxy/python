@@ -1,20 +1,28 @@
 # -*- coding: UTF-8 -*-
-'''
+"""
 Created on 29/08/2011
 
 @author: Rafael Campos @rafaelxy
-'''
+"""
 import wx
+
+import controller.events as events
+#from controller.app import App
 
 class ToolBar(wx.GridBagSizer):
     def __init__(self, parent):
         """Toolbar com botoes de opcoes"""
         wx.GridBagSizer.__init__(self, 5, 15)
         
-        self.parent = parent;
+        self.parent = parent
+        self.main_frame = self.parent.Parent
+        
         self.AddGrowableRow(13)
         self.AddGrowableCol(0)
 
+        self.buttons = dict()
+        self.actions = events.Actions()
+        
         self.__add_buttons()
         
         
@@ -22,13 +30,15 @@ class ToolBar(wx.GridBagSizer):
         colBotoes = 0
         rowBotoes = 0
         self.buttonGerarLista = wx.Button(self.parent, wx.NewId(), "Gerar Lista")
-#            self.Bind(wx.EVT_BUTTON, self.__OnClickGerarLista, self.buttonGerarLista)
+        
+#        self.parent.Parent.Bind(wx.EVT_BUTTON, self.__OnClickGerarLista, self.buttonGerarLista)
         self.Add(self.buttonGerarLista, (rowBotoes,colBotoes), (1,2), wx.EXPAND)
         rowBotoes+=1
         
-        self.buttonAbrir = wx.Button(self.parent, wx.NewId(), "Abrir Lista")
-#            self.Bind(wx.EVT_BUTTON, self.__OnClickAbrir, self.buttonAbrir)
-        self.Add(self.buttonAbrir, (rowBotoes,colBotoes), (1,2), wx.EXPAND)
+        #todo trocar os botoes pelo dict
+        self.buttons["open_list"] = wx.Button(self.parent, wx.NewId(), "Abrir Lista")
+        self.main_frame.Bind(wx.EVT_BUTTON, self.actions.file_to_pkglist, self.buttons["open_list"])
+        self.Add(self.buttons["open_list"], (rowBotoes,colBotoes), (1,2), wx.EXPAND)
         rowBotoes+=1
 
         self.buttonSalvar = wx.Button(self.parent, wx.NewId(), "Salvar Lista")

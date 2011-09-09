@@ -1,27 +1,22 @@
 # -*- coding: UTF-8 -*-
 
-'''
+"""
 Created on 31/08/2011
 
 @author: Rafael Campos @rafaelxy
-'''
-
-"""
        
-    Tarjan's algorithm and topological sorting implementation in Python
-    
-    by Paul Harrison, modified by Rafael Campos
-    
-    Public domain, do with it as you will
+Tarjan's algorithm and topological sorting implementation in Python
+by Paul Harrison, modified by Rafael Campos (compability)
 
+@see: http://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 """
 def strongly_connected_components(graph):
     """ 
-        Find the strongly connected components in a graph using
-        Tarjan's algorithm.
-        
-        graph should be a dictionary mapping node names to
-        lists of successor nodes.
+    Find the strongly connected components in a graph using
+    Tarjan's algorithm.
+    
+    graph should be a dictionary mapping node names to
+    lists of successor nodes.
     """
     
     result = [ ]

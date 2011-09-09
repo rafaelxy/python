@@ -1,16 +1,18 @@
 # -*- coding: UTF-8 -*-
 
-'''
+"""
 Created on 19/08/2011
 
 @author: Rafael Campos @rafaelxy
-'''
+"""
 
 import sys
 import traceback
 sys.tracebacklimit = 100
 
 from controller.app import App 
+
+#from compiler.package import PackageList 
 
 def main():
     try:
@@ -21,7 +23,7 @@ def main():
             print "run command line"
         else:
             raise Exception("Número incorreto de parâmetros")
-    except:
+    except Exception, e:
         print traceback.format_exc()
 #        raise e    
         

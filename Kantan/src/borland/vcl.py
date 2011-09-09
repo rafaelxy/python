@@ -1,9 +1,9 @@
 # -*- coding: UTF-8 -*-
-'''
+"""
 Created on 31/08/2011
 
 @author: e0621ap
-'''
+"""
 ignore_packages = (['vcl.bpi', 'rtl.bpi', 'dbrtl.bpi', 'adortl.bpi', 
                     'vcldb.bpi', 'vclx.bpi', 'bdertl.bpi', 'vcldbx.bpi', 
                     'ibxpress.bpi', 'dsnap.bpi', 'cds.bpi', 'bdecds.bpi', 
