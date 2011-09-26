@@ -10,9 +10,10 @@ import wx
 import wx.lib.agw.aui as aui
 
 import panel
+import view.menu as menu
 
-import controller.events as events
-#import pickle
+import controller.serialize as ctrl_serial
+
 
 class WindowApp(wx.App):
     """
@@ -21,6 +22,7 @@ class WindowApp(wx.App):
     def OnInit(self):
         try:
             self.main_frame = MainFrame(None, -1, "")
+            self.main_frame.wx_app = self
             self.SetTopWindow(self.main_frame)
             self.main_frame.CenterOnScreen()
             self.main_frame.Show()
@@ -29,7 +31,6 @@ class WindowApp(wx.App):
             raise e;
         
 ###############################################################################
-
 class MainFrame(wx.Frame):
     """
     Frame principal da aplicacao, controla o AUI Manager
@@ -38,20 +39,34 @@ class MainFrame(wx.Frame):
         kwds["style"] = wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, None, wx.ID_ANY, title="Kantan", size=(1024,768))
 
+        self.wx_app = None
         self.aui_mgr = aui.AuiManager(self)
         
+        self.list_seed = panel.ListSeed(self)
         self.list_panel = panel.ListPackages(self)
         self.console_panel = panel.ListConsole(self)
         self.tool_panel = panel.ToolBar(self)
+        
+#        self.list_seed.
         
         self.__init_panel_manager()
         
 #        self.SetClientSize(self.GetSize())
 
-        self.SetMenuBar(MainMenuBar(self).menu_bar)
+        self.SetMenuBar(menu.MainMenuBar(self).menu_bar)
 #        self.__create_menu()
+#
+#        self.Bind(wx.EVT_MENU, self.close_window, id=wx.ID_EXIT)
+#
+        self.Bind(wx.EVT_CLOSE, self.close_window)
+        
+        ctrl_serial.load(self)
 
     def __init_panel_manager(self):
+        info = aui.AuiPaneInfo().CloseButton(visible=False).MaximizeButton().MinimizeButton()
+        info.Left().Name("Seeds").MinSize(160, 0)
+        self.aui_mgr.AddPane(self.list_seed, info)
+        
         info = aui.AuiPaneInfo().CloseButton(visible=False).MaximizeButton().MinimizeButton()
         info.Center().Name("Packages")
         self.aui_mgr.AddPane(self.list_panel, info)
@@ -64,32 +79,18 @@ class MainFrame(wx.Frame):
         info.Right().Name("Toolbar")
         self.aui_mgr.AddPane(self.tool_panel, info)
         
-        self.aui_mgr.Update()        
-
-###############################################################################
-
-class MainMenuBar(object):
-    def __init__(self, frame):
-        self.menu_bar = wx.MenuBar()
-        self.menu_bar.Append(FileMenu(frame).menu, "File")
-#        self.Append(HelpMenu(), "Help")
+        self.aui_mgr.Update()
         
-###############################################################################
-
-class FileMenu(object):
-    def __init__(self, frame):
-        self.menu = wx.Menu()
-        self.actions = events.Actions()
-        frame.Bind(wx.EVT_MENU, self.actions.file_to_pkglist, 
-                  self.menu.Append(wx.ID_ANY, "Open Package List...", 
-                                  "Open Package List"))
-        frame.Bind(wx.EVT_MENU, self.actions.exit, 
-                  self.menu.Append(wx.ID_ANY, "&Exit\tAlt+F4", "Exit Program"))
+    def close_window(self, event):
+        dlg = wx.MessageDialog(self, "Do you want to save interface settings?", "Save Interface Settings", wx.YES_NO | wx.ICON_QUESTION)
+        if dlg.ShowModal() == wx.ID_YES:
+            ctrl_serial.dump(self)
+            
+        self.Destroy() # frame
+        dlg.Destroy()
+        return False
     
 ###############################################################################
 
-class HelpMenu(wx.Menu):
-    def __init__(self):
-        self.actions = events.Actions()
-        
+    
     

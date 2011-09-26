@@ -12,19 +12,21 @@ sys.tracebacklimit = 100
 
 from controller.app import App 
 
-#from compiler.package import PackageList 
+from compiler.package import PackageList 
 
 def main():
     try:
         if len(sys.argv) == 1:
             app = App()
             app.run()
-        elif len(sys.argv) == 3:
-            print "run command line"
+#        elif len(sys.argv) == 3:
+#            print "run command line"
         else:
-            raise Exception("Número incorreto de parâmetros")
+            print "run command line"
+#            raise Exception("Número incorreto de parâmetros")
     except Exception, e:
         print traceback.format_exc()
+        raw_input()
 #        raise e    
         
 if __name__ == '__main__':
