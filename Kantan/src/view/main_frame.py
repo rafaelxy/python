@@ -47,17 +47,10 @@ class MainFrame(wx.Frame):
         self.console_panel = panel.ListConsole(self)
         self.tool_panel = panel.ToolBar(self)
         
-#        self.list_seed.
-        
         self.__init_panel_manager()
         
-#        self.SetClientSize(self.GetSize())
-
         self.SetMenuBar(menu.MainMenuBar(self).menu_bar)
-#        self.__create_menu()
-#
-#        self.Bind(wx.EVT_MENU, self.close_window, id=wx.ID_EXIT)
-#
+        
         self.Bind(wx.EVT_CLOSE, self.close_window)
         
         ctrl_serial.load(self)

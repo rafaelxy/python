@@ -49,7 +49,7 @@ class Ctrl(object):
         self.__log("make " + file)
 
         while 1:
-#            App().__windows_app.Yield()
+#            __windows_app.Yield()
             main_frame.console_panel.list_ctrl.Update()
             out = self.job.readMsg()
             if out == "":

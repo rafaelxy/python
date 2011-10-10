@@ -8,22 +8,20 @@ Created on 19/08/2011
 
 import sys
 import traceback
-sys.tracebacklimit = 100
+#sys.tracebacklimit = 100
 
-from controller.app import App 
+from controller.app import GuiApp
+from controller.app import CmdApp 
 
-from compiler.package import PackageList 
 
 def main():
     try:
         if len(sys.argv) == 1:
-            app = App()
+            app = GuiApp()
             app.run()
-#        elif len(sys.argv) == 3:
-#            print "run command line"
         else:
-            print "run command line"
-#            raise Exception("Número incorreto de parâmetros")
+            app = CmdApp(sys.argv)
+            app.run()
     except Exception, e:
         print traceback.format_exc()
         raw_input()

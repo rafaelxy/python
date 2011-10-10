@@ -7,7 +7,6 @@ Created on 29/08/2011
 import wx
 
 import controller.events as events
-#from controller.app import App
 
 class ToolBar(wx.GridBagSizer):
     def __init__(self, parent):

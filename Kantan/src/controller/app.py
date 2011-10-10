@@ -9,13 +9,16 @@ import traceback
 
 from view.main_frame import WindowApp
 
-#from base.interfaces import Borg 
-
 import controller.events as events
 import controller.list as ctrl
 
 import os
-class App(object):
+
+import subprocess
+
+APP_NAME = "Clone Builder"
+
+class GuiApp(object):
     __shared_state = {}
 
     def __init__(self):
@@ -50,7 +53,40 @@ class App(object):
         
 ###############################################################################
 
+from getopt import getopt
+
+import argparse
+
+class CmdApp(object):
+    __shared_state = {}
+    def __init__(self, args):
+        self.__dict__ = self.__shared_state
         
+        self.cmd = args[0]
+        self.args = args[1:]
         
+        self.APP_PATH = os.path.realpath("./")
         
+    def run(self):
+        parser = argparse.ArgumentParser(description="Process some integers.")
+        
+        parser.add_argument("integers", metavar='N', type=int, nargs='+',
+                           help="Command line interface for " + APP_NAME)
+        
+        parser.add_argument("--sum", dest="accumulate", action="store_const",
+                           const=sum, default=max,
+                           help="sum the integers (default: find the max)")
+        
+        args = parser.parse_args()
+        print args.accumulate(args.integers)
+
+#        self.optlist, self.args = getopt(self.args, 'x', ['condition=', 'output-file=', 'testing'])
+#
+#        print self.optlist
+#        print self.args
+
+#        cmd = "dir"
+#        process = subprocess.Popen(cmd, 0, stdout=subprocess.PIPE)
     
+###############################################################################
+
